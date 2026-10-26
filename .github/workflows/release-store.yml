@@ -1,3 +1,4 @@
+# ng-runner-policy: private-jit-only-v1
 name: Release Store
 
 on:
@@ -26,7 +27,7 @@ permissions:
 jobs:
   release:
     if: github.event_name != 'workflow_dispatch' || inputs.purge_only != true
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-casaos-appstore","ng-main-run-{0}","gha-{0}-release"]}}', github.run_id)) }}
     env:
       RELEASE_TAG: ${{ inputs.tag_name != '' && inputs.tag_name || github.ref_name }}
       BUILD_CACHE_KEY: build-appstore-cache-${{ github.ref_name }}-${{ github.run_id }}
@@ -202,7 +203,7 @@ jobs:
 
   purge-only:
     if: github.event_name == 'workflow_dispatch' && inputs.purge_only == true
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-casaos-appstore","ng-main-run-{0}","gha-{0}-purge-only"]}}', github.run_id)) }}
     permissions:
       contents: read
     steps:

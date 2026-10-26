@@ -1,3 +1,4 @@
+# ng-runner-policy: private-jit-only-v1
 name: Build Store Artifacts
 
 on:
@@ -16,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-casaos-appstore","ng-main-run-{0}","gha-{0}-build"]}}', github.run_id)) }}
     env:
       BUILD_CACHE_KEY: build-appstore-cache-${{ github.ref_name }}-${{ github.run_id }}
       BUILD_CACHE_PREFIX: build-appstore-cache-${{ github.ref_name }}-
