@@ -1,10 +1,10 @@
 # ng-runner-policy: private-jit-only-v1
 name: Release Store
 
+
+run-name: >-
+  ${{ inputs.release_tag != '' && format('action:{0}:pool:{1}:tag:{2}', inputs.action, inputs.runner_pool, inputs.release_tag) || format('action:{0}:pool:{1}', inputs.action, inputs.runner_pool) }}
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
     inputs:
       action:
@@ -17,7 +17,7 @@ on:
         type: choice
         options: [private]
         required: true
-      tag_name:
+      release_tag:
         description: "Optional tag name to publish as the release version"
         required: false
         default: ""
@@ -42,7 +42,8 @@ jobs:
         (
           github.ref == 'refs/heads/main' &&
           inputs.action == 'publish' &&
-          inputs.runner_pool == 'private'
+          inputs.runner_pool == 'private' &&
+          inputs.release_tag != ''
         )
       ) &&
       (
@@ -50,12 +51,15 @@ jobs:
       )
     runs-on: ${{ fromJSON(format('{{"group":"ng-shared-main-jit","labels":["self-hosted","linux","x64","ng-shared-main-casaos-appstore","ng-main-run-{0}","gha-{0}-release"]}}', github.run_id)) }}
     env:
-      RELEASE_TAG: ${{ inputs.tag_name != '' && inputs.tag_name || github.ref_name }}
-      BUILD_CACHE_KEY: build-appstore-cache-${{ github.ref_name }}-${{ github.run_id }}
-      BUILD_CACHE_PREFIX: build-appstore-cache-${{ github.ref_name }}-
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      BUILD_CACHE_KEY: build-appstore-cache-${{ inputs.release_tag }}-${{ github.run_id }}
+      BUILD_CACHE_PREFIX: build-appstore-cache-${{ inputs.release_tag }}-
       BUILD_CACHE_MAIN_PREFIX: build-appstore-cache-main-
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.release_tag }}
+          fetch-depth: 0
 
       - name: Restore build caches
         uses: actions/cache/restore@v5
