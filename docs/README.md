@@ -35,7 +35,11 @@ pnpm dev
 ```
 
 This docs site currently uses `pnpm` with `pnpm-lock.yaml` as the source of
-truth for Node dependencies.
+truth for Node dependencies. VitePress remains on its stable 1.x release. A
+scoped `vitepress>vite` override selects patched Vite 6.4.4 or newer because
+the stable generator still requests Vite 5. The Vue plugin supports Vite 6;
+validate the documentation build and local development server whenever updating
+this override.
 
 Default build output:
 
